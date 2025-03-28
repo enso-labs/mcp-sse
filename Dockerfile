@@ -17,8 +17,5 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY . .
 
-# Expose port
-EXPOSE 8005
-
 # Run the application
 CMD ["python", "main.py"]
