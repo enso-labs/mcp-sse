@@ -19,3 +19,4 @@ class Config(Enum):
     APP_PORT = os.getenv("APP_PORT", 8010)
     MCP_API_KEY = os.getenv("MCP_API_KEY", 'this-is-a-test-key')
     MCP_INSTRUCTIONS = os.getenv("MCP_INSTRUCTIONS", Instructions.ENSO_CLOUD.value)
+    TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", 'this-is-a-test-key')
