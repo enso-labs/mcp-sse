@@ -25,7 +25,7 @@ Simple MCP Server w/ Shell Exec. Connect to Local via Ngrok, or Host Ubuntu24 Co
 ## Install uv (if you not using you late to party)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-## Create virtual environemtn
+## Create virtual environment
 uv venv
 source .venv/bin/activate
 
