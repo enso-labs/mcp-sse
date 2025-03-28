@@ -5,11 +5,11 @@ from mcp_wrap.server import FastMCP
 
 from src.config import Config
 from src.middleware.api_key import middleware
-
+from src.utils.scrape import retrieve_webpage
 # Initialize FastMCP server instance
 mcp = FastMCP(
     name=Config.APP_NAME.value,
-    instructions=Config.APP_INSTRUCTIONS.value,
+    instructions=Config.MCP_INSTRUCTIONS.value,
     settings={
         'debug': Config.APP_DEBUG.value,          # Enable debug mode
         'port': Config.APP_PORT.value,          # Port to run server on
@@ -23,6 +23,11 @@ def shell_command(command: str) -> str:
     ctx = mcp.get_context()
     middleware(ctx.request_context)
     return subprocess.check_output(command, shell=True).decode()
+
+@mcp.tool()
+def web_scrape(url: str) -> str:
+    """Scrape a web page"""
+    return retrieve_webpage(url)
 
 if __name__ == "__main__":
     print(f"Starting MCP server... {Config.APP_NAME.value} on port {Config.APP_PORT.value}")

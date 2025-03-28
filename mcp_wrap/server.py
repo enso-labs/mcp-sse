@@ -15,7 +15,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Mount, Route
 
-from low_level import McpServer
+from mcp_wrap.low_level import McpServer
 
 logger = get_logger(__name__)
 

@@ -18,7 +18,7 @@ from mcp import types, McpError
 from mcp.server.lowlevel.server import Server as _Server, LifespanResultT
 from starlette.types import Scope
 
-from context import RequestContext
+from mcp_wrap.context import RequestContext
 
 logger = logging.getLogger(__name__)
 
