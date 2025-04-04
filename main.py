@@ -1,6 +1,7 @@
 # mcp/main.py
-from typing import Literal
 import uvicorn
+from typing import Literal
+from datetime import datetime
 from mcp_wrap.server import FastMCP
 
 from src.config import Config
@@ -8,6 +9,8 @@ from src.middleware.api_key import middleware
 from src.utils.scrape import retrieve_webpage
 from src.utils.shell import tool_shell_command
 from src.utils.search import Search
+from homeharvest import scrape_property
+
 # Initialize FastMCP server instance
 mcp = FastMCP(
     name=Config.APP_NAME.value,
@@ -20,28 +23,40 @@ mcp = FastMCP(
 )
 
 @mcp.tool()
-def shell_command(command: str) -> str:
-    """Execute a shell command"""
-    ctx = mcp.get_context()
-    middleware(ctx.request_context)
-    return tool_shell_command(command)
-
-@mcp.tool()
 def web_scrape(url: str) -> str:
     """Scrape a web page"""
     return retrieve_webpage(url)
 
 @mcp.tool()
-def web_search(query: str, search_type: Literal["question", "context", None] = None) -> str:
-    """Search the web
-    
-    Args:
-        query: The search query
-        search_type: Type of search to perform - "question" for question answering,
-                     "context" for context search, or None for standard search
-    """
-    result = Search().query(query, search_type)
-    return result
+def search_properties(
+    location: str,
+    past_days: int = 30,
+    radius: float = 20,
+    limit: int = 10,
+    mls_only: bool = True,
+    foreclosure: bool = False,
+    extra_property_data: bool = True,
+    exclude_pending: bool = True,
+    property_type: Literal["single_family", "multi_family"] = ["single_family", "multi_family"],
+    listing_type: Literal["sold", "for_sale", "for_rent", "pending"] = "for_sale",
+) -> str:
+    """Search for properties on homeharvest"""
+    try:
+        properties = scrape_property(
+            location=location,
+            past_days=past_days,
+            radius=radius,
+            limit=limit,
+            mls_only=mls_only,
+            foreclosure=foreclosure,
+            extra_property_data=extra_property_data,
+            exclude_pending=exclude_pending,
+            property_type=property_type,
+            listing_type=listing_type,
+        ).to_json(orient='records')
+        return properties
+    except Exception as e:
+        return f"Error: {e}"
 
 if __name__ == "__main__":
     print(f"Starting MCP server... {Config.APP_NAME.value} on port {Config.APP_PORT.value}")

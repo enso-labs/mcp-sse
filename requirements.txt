@@ -3,3 +3,4 @@ httpx
 python-dotenv
 markitdown[all]
 tavily-python
+homeharvest
