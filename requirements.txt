@@ -1,6 +1,9 @@
 langchain-mcp-adapters
 httpx
+langchain-core
 python-dotenv
 markitdown[all]
 tavily-python
-homeharvest
+langchain-openai
+langchain-text-splitters
+simsimd
