@@ -13,3 +13,4 @@ htmlcov/
 scripts/
 Docker*
 docker-compose.yml
+.cursor*

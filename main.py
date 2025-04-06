@@ -1,7 +1,8 @@
 # mcp/main.py
 import json
 import os
-from src.middleware.api_key import middleware
+from typing import List, Optional
+from src.middleware.api_key import get_headers, middleware
 from src.utils.rag import DEFAULT_VECTOR_STORE_PATH
 from pydantic import BaseModel
 import uvicorn
@@ -12,6 +13,7 @@ from src.config import Config
 from src.utils.scrape import retrieve_webpage
 
 from src.utils.rag import VectorStore, Splitter
+from src.utils.github import GitHubAPI
 
 # Initialize FastMCP server instance
 mcp = FastMCP(
@@ -35,19 +37,66 @@ class Split(BaseModel):
     chunk_size: int = 1000
     chunk_overlap: int = 0
 
-@mcp.tool()
-async def scrape_to_knowledge_base(url: str, title: str, split: Split) -> str:
-    """Scrape a web page and add it to the knowledge base"""
-    page = retrieve_webpage(url)
-    docs = [Document(page_content=page, metadata={"source": url, "title": title})]
-    if split.active:
-        docs = splitter.split_docs(docs)
-        # Add chunk index to metadata for each document
-        for i, doc in enumerate(docs):
-            doc.metadata["chunk"] = i
-    await vector_store.aadd_docs(docs)
-    return f"Scraped {url} resulting in {len(docs)} documents"
 
+@mcp.tool()
+async def index_github_repository(
+    owner: str,
+    repo: str,
+    extensions: List[str],
+    path: str = "",
+    ref: Optional[str] = None,
+    chunk_size: int = 0,
+    chunk_overlap: int = 0
+) -> str:
+    """
+    Index a GitHub repository's contents into the knowledge base.
+    
+    Args:
+        owner: GitHub repository owner/organization
+        repo: Repository name
+        extensions: List of file extensions to index (e.g. [".py", ".md"])
+        path: Optional path within repository to start indexing from
+        ref: Optional branch, tag, or commit SHA
+        chunk_size: Size of text chunks for splitting documents
+        chunk_overlap: Overlap between chunks
+    
+    Returns:
+        str: Summary of indexing operation
+    """
+    ctx = mcp.get_context()
+    headers = get_headers(ctx.request_context)
+    authorization = headers.get("authorization")
+    if not authorization:
+        raise ValueError("Authorization header is required")
+    
+    # Initialize GitHub client
+    github_client = GitHubAPI(pat_token=authorization)
+    
+    try:
+        # Get and index repository contents
+        documents = await github_client.get_repository_contents_to_vectorstore(
+            owner=owner,
+            repo=repo,
+            extensions=extensions,
+            path=path,
+            ref=ref,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        )
+        
+        return (
+            f"Successfully indexed {len(documents)} documents from {owner}/{repo}\n"
+            f"Extensions processed: {', '.join(extensions)}\n"
+            f"Path: {path or 'root'}\n"
+            f"Reference: {ref or 'default branch'}"
+        )
+        
+    except Exception as e:
+        return f"Error indexing repository: {str(e)}"
+
+#####################################################################################
+# RAG
+#####################################################################################
 @mcp.tool()
 async def retrieve_documents(query: str, search_type: str = "mmr", search_kwargs: dict = {'k': 10}) -> list[dict]:
     """Rewrite the query to be more specific and retrieve documents from the knowledge base"""
