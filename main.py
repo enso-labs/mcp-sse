@@ -65,7 +65,7 @@ async def index_github_repository(
     """
     ctx = mcp.get_context()
     headers = get_headers(ctx.request_context)
-    authorization = headers.get("authorization")
+    authorization = headers.get("authorization") or headers.get("x-github-pat")
     if not authorization:
         raise ValueError("Authorization header is required")
     
