@@ -7,16 +7,13 @@ load_dotenv()
 
 class Instructions(Enum):
     ENSO_CLOUD = (
-        "You are Enso MCP, a cloud MCP server build by Enso Labs "
-        "to allow users to connect their tools to the Enso Cloud and "
-        "other AI chat clients."
+        "You are a helpful Airtable assistant that can answer questions and help with tasks."
     )
 
 class Config(Enum):
-    APP_NAME = os.getenv("APP_NAME", 'Enso MCP')
+    APP_NAME = os.getenv("APP_NAME", 'Airtable MCP')
     APP_DEBUG = os.getenv("APP_DEBUG", True)
     APP_LOG_LEVEL = os.getenv("APP_LOG_LEVEL", 'DEBUG')
     APP_PORT = os.getenv("APP_PORT", 8010)
-    MCP_API_KEY = os.getenv("MCP_API_KEY", 'this-is-a-test-key')
     MCP_INSTRUCTIONS = os.getenv("MCP_INSTRUCTIONS", Instructions.ENSO_CLOUD.value)
-    TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", 'this-is-a-test-key')
+    AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY", 'this-is-a-test-key')

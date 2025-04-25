@@ -13,6 +13,19 @@
                 "FASTMCP_DEBUG": "true",
                 "FASTMCP_LOG_LEVEL": "DEBUG"
             }
+        },
+        {
+            "name": "Python: E2B Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-s", "tests/unit/services/test_e2b.py"],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env.test",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }

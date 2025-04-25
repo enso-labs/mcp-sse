@@ -26,23 +26,6 @@ def shell_command(command: str) -> str:
     middleware(ctx.request_context)
     return tool_shell_command(command)
 
-@mcp.tool()
-def web_scrape(url: str) -> str:
-    """Scrape a web page"""
-    return retrieve_webpage(url)
-
-@mcp.tool()
-def web_search(query: str, search_type: Literal["question", "context", None] = None) -> str:
-    """Search the web
-    
-    Args:
-        query: The search query
-        search_type: Type of search to perform - "question" for question answering,
-                     "context" for context search, or None for standard search
-    """
-    result = Search().query(query, search_type)
-    return result
-
 if __name__ == "__main__":
     print(f"Starting MCP server... {Config.APP_NAME.value} on port {Config.APP_PORT.value}")
     # Start server with Server-Sent Events transport
