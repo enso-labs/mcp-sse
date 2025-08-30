@@ -1,9 +1,8 @@
 from markitdown import MarkItDown
 
-md = MarkItDown(enable_plugins=False)
-
 def web_scrape(urls: List[str]) -> str:
     """Retrieve content from a list of URLs or Paths"""
+    md = MarkItDown(enable_plugins=False)
     docs = []
     for url in urls:
         document = md.convert(url)
