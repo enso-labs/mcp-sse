@@ -2,16 +2,14 @@ from markitdown import MarkItDown
 
 md = MarkItDown(enable_plugins=False)
 
-def retrieve_webpage(url: str) -> str:
-    """Retrieve a web page"""
-    result = md.convert(url)
-    
-    # Format the output for better readability
-    formatted_output = ""
-    
-    if result.title:
-        formatted_output = f"# {result.title}\n\n{result.markdown}"
-    else:
-        formatted_output = result.markdown
-    
-    return formatted_output
+def web_scrape(urls: List[str]) -> str:
+    """Retrieve content from a list of URLs or Paths"""
+    docs = []
+    for url in urls:
+        document = md.convert(url)
+        if document.title:
+            formatted_output = f"# {document.title}\n\n{document.markdown}"
+        else:
+            formatted_output = document.markdown
+        docs.append(formatted_output)
+    return "\n\n---\n\n".join(docs)
